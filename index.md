@@ -1,7 +1,6 @@
 ## Bienvenue sur notre page github dans le cadre du cours de fouille de données
 
 <img src="charline.jpg" width="100">
-Charline Zwick
 <a href="mailto:charline.zwick@gmail.com?">Charline Zwick</a>
                                                                                                                                                     
                                                                                                                                                     
