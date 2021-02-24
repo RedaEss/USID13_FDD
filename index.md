@@ -5,4 +5,4 @@
                                                                                                                                                     
 <img src="IMG_20190811_170738.png" width="100">
 <a href="mailto:reda.essakhi.auditeur@lecnam.ne?">Réda Es-sakhi</a>
-<img src="https://upload.wikimedia.org/wikipedia/commons/6/66/Logo_cnam.gif"/></a>
+<img src="https://upload.wikimedia.org/wikipedia/commons/6/66/Logo_cnam.gif"/>
