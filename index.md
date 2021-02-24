@@ -1,9 +1,9 @@
-## Welcome to GitHub Pages
+## Bienvenue sur notre page github dans le cadre du cours de fouille de données
 
-You can use the [editor on GitHub](https://github.com/RedaEss/USID13_FDD/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
+<img src="charline.jpeg" width="50">
+<a href="mailto:charline.zwick@gmail.com><img src="https://img.shields.io/badge/gmail-%23DD0031.svg?&style=for-the-badge&logo=gmail&logoColor=white"/></a>
+                                                                                                                                                    
+                                                                                                                                                    
 ### Markdown
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
