@@ -1,7 +1,9 @@
 ## Bienvenue sur notre page github dans le cadre du cours de fouille de données
 
-<img src="charline.jpg" width="50">
+<img src="charline.jpg" width="100">
 <a href="mailto:charline.zwick@gmail.com><img src="https://img.shields.io/badge/gmail-%23DD0031.svg?&style=for-the-badge&logo=gmail&logoColor=white"/></a>
+                                                                                                                                                    
+                                                                                                                                                    
                                                                                                                                                     
                                                                                                                                                     
 ### Markdown
