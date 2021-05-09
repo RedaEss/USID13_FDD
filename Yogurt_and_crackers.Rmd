@@ -1,0 +1,128 @@
+---
+title: 'Discrete Choice Models'
+author: "Réda Es-sakhi"
+date: "09/05/2021"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Origin of the data
+For the Discrete Choise Models project, we are using Yogurt data available in Ecdat's package
+
+
+```{r load library, include = FALSE}
+#install.packages("knitr")
+#install.packages("kableExtra")
+#install.packages("mlogit")
+#install.packages("Ecdat")
+library(knitr)
+library(mlogit)
+library(Ecdat)
+data("Cracker",package="mlogit")
+data("Yogurt",package="Ecdat")
+```
+
+```{r head cracker data}
+head(Yogurt)
+```
+
+
+# Data preparation 
+* Yogurt data is transformed from wide format to long format where each column considered as variable.
+
+
+```{r , fig.cap= "table 1 : Yogurtlong summary statistics"}
+Yogurtlong<-mlogit.data(Yogurt,shape = "long",varying = 2:9,choice = "choice")
+library(stargazer)
+names(Yogurtlong)[3]<-c("Brand")
+stargazer(Yogurtlong, summary=T,type = 'text',title = "table 1 : Yogurtlong summary statistics")
+
+
+```
+
+## summarising Yogurt data by brand
+Here we analyze each brand data. Market Share (MS), Price and Feat. 
+```{r summarise yogurt data}
+library(dplyr)
+MS_tab=summarise(
+  group_by(Yogurtlong,Brand),
+          mean=mean(choice),
+          sd=sd(choice),
+            )
+Price_tab=summarise(
+  group_by(Yogurtlong,Brand),
+          mean=mean(price),
+          sd=sd(price),
+            )
+Feat_tab=summarise(
+  group_by(Yogurtlong,Brand),
+          mean=mean(feat),
+          sd=sd(feat),
+              )
+```
+
+
+```{r kable yogurt data}
+kables(
+  list(
+    kable(MS_tab[1],digits = 4,caption = "Brand"),
+    kable(MS_tab[-1],digits = 4,caption = "Market Shares"),
+    kable(Price_tab[-1],digits = 4,caption = "Prices"),
+    kable(Feat_tab[-1],digits = 4,caption = "Feature")
+  ),
+  caption = "Yogurt Data summary statistics"
+) #%>% kableExtra::kable_styling(bootstrap_options = "basic", full_width = F)
+```
+## MNL Model
+
+
+
+MNL Models or Multinomial logit model is given by the equation :  
+$$
+\mathbb{P}_i = \frac{e^{u_i}}{\sum_{k=1}^ne^{u_k}}, \:i=1,\cdots,n
+$$
+where $u_1,\cdots,u_n$ deterministic or systematic part and $n$ the number of alternatives.  
+Applied to our data we have for choice probabilities the following : 
+```{r}
+beta = 1
+log(exp(beta*Yogurtlong$price[1:4])/sum(exp(beta*Yogurtlong$price[1:4])))%*%Yogurtlong$choice[1:4]
+```
+li_func 
+```{r,fig.cap= "Variation of Likelihood"}
+li_func <- function(beta){
+  somme = 0
+  for (i in seq(0.9644,4)) {
+    loga <- log(exp(beta*Yogurtlong$price[(i+1):(i+4)])/sum(exp(beta*Yogurtlong$price[(i+1):(i+4)])))%*%Yogurtlong$choice[(i+1):(i+4)]
+    somme <- loga + somme
+  }
+  return(somme)
+}
+resLi = c()
+for (beta in seq(-1,1,0.1)) {
+  resLi = c(resLi,li_func(beta))
+}
+plot(x=seq(-1,1,0.1),y=resLi)
+```
+
+
+
+
+
+
+```{r}
+optimize(li_func, interval = c(-1,1),maximum = TRUE)
+```
+```{r}
+library("mlogit")
+m<-mlogit(choice~price+feat,Yogurtlong)
+stargazer(m,summary=F,type = 'text')
+```
+
+
+
+
