@@ -1,0 +1,512 @@
+---
+title: "Cluster Analysis"
+author: "Réda Es-sakhi"
+date: "01/05/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Required packages
+
+```{r, echo=TRUE}
+#install.packages("cluster")
+#install.packages("factoextra")
+#install.packages("cluster.datasets")
+#install.packages("xtable")
+#install.packages("kableExtra")
+#install.packages("knitr")
+#install.packages("summarytools")
+#install.packages("stargazer")
+#install.packages("ade4")
+#install.packages("tidymodels")
+```
+
+```{r}
+x<-c(0,0)
+y<-c(6,6)
+dist(rbind(x,y),method = "euclidian", diag = T, upper = T)
+```
+## Excercie 4 minkowski distance 
+```{r}
+library("ggplot2")
+x<-c(0,0)
+y<-c(6,6)
+
+MinkowDist=c() # Initialiser à vide la liste
+for (p in seq(1,30,.01))
+{
+MinkowDist=c(MinkowDist,dist(rbind(x, y), method = "minkowski", p = p))     
+}
+
+dist_plot <- ggplot(data =data.frame(x = seq(1,30,.01), y=MinkowDist ) , mapping = aes( x=x, y= y))+
+  geom_point(size=.1,color="red")+
+  xlab("p")+ylab("Minkowski Distance")+
+  ggtitle("Minkowski distance wrt p")
+ 
+
+  dist_plot + annotate("text", x = 3, y = 12, label = "Manhattan, p = 1") + 
+    annotate("segment", x = 1, xend = 1, y = 0, yend = 12,
+  colour = "blue")+
+    annotate("text", x = 4, y = 9, label = "Euclidian, p = 2") + 
+    annotate("segment", x = 2, xend = 2, y = 0, yend = 8.5,
+  colour = "Green")
+  
+  
+```
+
+
+## exo5 
+```{r}
+
+n = 100
+m = log(2500*sqrt(2/13))
+s = sqrt(log(26/25))
+a <- rlnorm(n,m,s)
+mean(a)
+sd(a)
+plot(a)
+```
+
+## exo 6 
+```{r}
+x = c(22, 34, 1, 12, 25, 56, 7)
+y = c(2,64,12,2,22,5,8)
+```
+### ex6 The rank for each vector
+
+```{r}
+r_x = rank(x)
+r_y = rank(y)
+r_x
+r_y
+```
+
+### ex6 The rank for each vector
+```{r}
+d=r_x-r_y
+d
+```
+
+
+```{r}
+alt_cor = 1 - 6*sum(d^2)/(7*(7^2-1))
+alt_cor
+```
+
+
+```{r}
+spear_cor = cor(x,y, method=c("spearman"))
+spear_cor
+```
+## exo 7 
+x=(22,34,1,12,25,56,7)
+y=(2,64,12,2,22,5,8)
+1- liste les pairs (faire un tableau) 
+2 - nombre de pairs 
+Pair of coordinate (2 parmi n ) soit (n*(n-1))/2
+```{r}
+7*6/2
+```
+3- for each pair compute the sign (faire un tableau)
+```{r}
+tau=0
+for (i in 1:7)
+{  
+tau=tau+sign(x -x[i])%*%sign(y -y[i])
+}
+tau=tau/(7*6)
+tau
+```
+```{r}
+cor(x,y,method = "kendall")
+```
+## exo 8
+Age in (years) and height in (cm) of fout people
+```{r}
+table3 =c(
+  35,190,
+  40,190,
+  35,160,
+  40,160
+)
+table3=data.frame(matrix(table3, nrow=4,byrow=T))
+row.names(table3)=c("A","B","C","D")
+names(table3)=c("Age", "Height")
+table3
+```
+```{r}
+plot(Height~Age, 
+     main = "Plot of height (in centimeters) versus age for four people",
+     xlab = "Age (YEARS)", ylab = "Height (CM)",
+     col="lightblue", pch=19, cex=2,data=table3)
+text(Height~Age, labels=rownames(table3), data=table3, cex=0.9, font=2)
+```
+### Conversion de Height en Feet
+```{r}
+yCm <-table3$Height
+yCm
+yFeet <- yCm/30.48
+yFeet<-round(yFeet,2)
+yFeet
+
+```
+### faire un tableau avec kable
+```{r}
+table4 <- data.frame(table3$Age, yFeet)
+row.names(table4)=c("A","B","C","D")
+names(table4)=c("Age","Height")
+table4
+```
+### nouveau plot height en Feet
+```{r}
+plot(Height~Age, 
+     main = "Plot of height (in Feet) versus age for four people",
+     xlab = "Age (YEARS)", ylab = "Height (ft)",
+     col="red", pch=19, cex=2,data=table4)
+text(Height~Age, labels=rownames(table4), data=table4, cex=0.9, font=2)
+```
+On remarque la même distribution sur notre plot. On transforme l'unité de mesure ne change pas la visualisation et la relation entre les deux variables
+
+###
+```{r}
+xSt <- table3$Age
+xSt <- scale(xSt)
+xSt
+ySt <- table3$Height
+ySt <- scale(ySt)
+ySt
+
+
+
+```
+```{r}
+(table3$Age - mean(table3$Age))/sd(table3$Age)
+```
+
+
+
+### Tableau des variables standardisées 
+```{r}
+table5 <- data.frame(round(xSt,2),round(ySt,2))
+row.names(table5) = c("A","B","C","D")
+names(table5) = c("Age", "Height")
+table5
+```
+### plot des variables standardisées 
+```{r}
+plot(Height~Age, 
+     main = "Plot of standarized height and age for four people",
+     xlab = "Age ST", ylab = "Height ST",
+     col="red", pch=19, cex=2,data=table5)
+text(Height~Age, labels=rownames(table5), data=table5, cex=0.9, font=2)
+```
+
+La même distribution pour les variables standardisées sur notre plot
+
+## exo 9 
+Use the data set animals available in the package cluster.
+This data set was first used in this textbook KAUFMAN, Leonard et ROUSSEEUW, Peter J. Finding groups in data: an introduction to cluster analysis. John Wiley & Sons, 2009.
+Identify the missing measurements.
+Explain the way how KAUFMAN and ROUSSEEUW, pp. 296-297 treat the missing measurements.
+Compute a distance matrix for the completed data.
+Propose a graphical way to represent that distance matrix.
+Which group of animals look close?
+Change the method of calculating and observe if it has some effect of the graph
+
+### call library and animals dataset
+```{r}
+library(cluster)
+library(stargazer)
+library(forcats)
+data("animals")
+```
+
+### finding missing values
+```{r}
+head(animals)
+is.na(animals)
+str(animals)
+animalsF<- animals
+animalsF[animalsF == "1"] <- 0
+animalsF[animalsF == "2"] <- 1
+animalsF
+animalsF$war <- factor(animalsF$war, levels = c(0,1))
+animalsF$fly <- factor(animalsF$fly, levels = c(0,1))
+animalsF$ver <- factor(animalsF$ver, levels = c(0,1))
+animalsF$end <- factor(animalsF$end, levels = c(0,1))
+animalsF$gro <- factor(animalsF$gro, levels = c(0,1))
+animalsF$hai <- factor(animalsF$hai, levels = c(0,1))
+
+animalsF
+is.na(animalsF)
+```
+```{r}
+animals%>% is.na
+```
+```{r}
+row.names(animals)
+```
+
+
+
+
+
+```{r, include=FALSE}
+library(dplyr)
+library(tidyverse)
+library(tidymodels)
+```
+
+
+```{r}
+missing_values <- animalsF %>%
+  mutate(row_num = row_number()) %>%
+  gather(key = "key", value = "value", -row_num) %>%
+  filter(value %>% is.na()) %>%
+  #count(row_num, sort = TRUE) %>% 
+  select(row_num)
+
+```
+```{r}
+missing_values
+animalsF[missing_values$row_num,]
+
+```
+```{r}
+animalsFC <- animalsF  # animalsFC animals data completed
+animalsFC
+animalsFC["lio","end"] <- 1
+animalsFC["spi","end"] <- 0
+animalsFC["fro","gro"] <- 0
+animalsFC["lob","gro"] <- 0
+animalsFC["sal","gro"] <- 0
+animalsFC%>%is.na()
+```
+
+### matrice de distance
+```{r}
+library(ade4)
+df_animalsFC <- as.data.frame(lapply(animalsFC, as.numeric),row.names = c(row.names(animalsFC)))
+df_animalsFC
+df_animalsFC[df_animalsFC == "1"] <- 0
+df_animalsFC[df_animalsFC == "2"] <- 1
+df_animalsFC
+jaccard_mat <- dist.binary(df_animalsFC, method = 1, diag = T, upper = T)
+jaccard_mat
+```
+### Propose a graphical way to represent that distance matrix
+```{r, fig.cap="heatmap for distance matrix - Jaccard"}
+jaccard_mat%>%str
+heatmap(as.matrix(jaccard_mat),symm = T,keep.dendro = FALSE,Rowv = NA)
+```
+
+### simple matching matrix
+```{r}
+simple_mat <- dist.binary(df_animalsFC, method = 2, diag = T, upper = T)
+
+```
+```{r, fig.cap= "Heatmap for distance matrix - simple matching"}
+library(factoextra)
+fviz_dist(simple_mat)
+```
+
+## exo 10
+
+Prove that the distances based on the Simple Matching coefficient and the Jaccard coefficient satisfy A3.
+Prove that the distances proposed by Gower and Legendre (1986) do not satisfy A3.
+Hint: Proofs and counterexamples have to be adapted from in the paper: Gower, J. C., & Legendre, P. (1986). Metric and Euclidean properties of dissimilarity coefficients. Journal of classification, 3(1), 5-48.
+
+(Inclure les preuves de :
+https://arxiv.org/pdf/1612.02696.pdf
+
+https://www.researchgate.net/publication/24056133_Metric_and_Euclidean_properties_of_dissimilarity_coefficients/link/00463532856f248ec4000000/download
+
+
+
+## exo 11
+The number of possible partition of n objects is given by the Stirling numbers of the second kind
+
+
+$$
+{n\brace k} = {1\over k!} \sum_{i=1}^{k} (-1)^{i}{ n\choose k} (k-i)^{n} 
+$$
+
+example function in R 
+How many partitions of 3 objects are they in 6 object
+
+
+```{r}
+#install.packages("multicool")
+library(multicool)
+Stirling2(6,3)
+
+```
+
+## exo 13
+```{r}
+df=read.csv("https://raw.githubusercontent.com/karkil2205/Cluster-Analysis/master/Hartigandata1.csv")
+df%>%head
+df%>%summary
+```
+```{r}
+df<-df[1:8,c(3,4,6)]
+df
+
+df[3,1]
+
+df[3,1]<-13 # Error in line 3
+df[6,1]<-4 # Error at line 6
+df[7,3]<-1 # Error at line 7
+df
+
+rownames(df)<-c("BB","HR","BR","BS","BC","CB","CC","BH")
+colnames(df)<-c("Energy","Protein","Calcium")
+df
+```
+
+
+```{r}
+km.res<-kmeans(df[1:8,],3,iter.max = 100)
+km.res
+```
+
+
+```{r}
+k_clus <- km.res$cluster
+k_clus
+
+```
+
+
+```{r}
+km.res$centers
+km.res$totss
+sum((df[1:8,]$Energy-mean(df[1:8,]$Energy))^2)+
+  sum((df[1:8,]$Protein-mean(df[1:8,]$Protein))^2)+
+  sum((df[1:8,]$Calcium-mean(df[1:8,]$Calcium))^2)
+7*var(df[1:8,]$Energy)+7*var(df[1:8,]$Protein)+7*var(df[1:8,]$Calcium)
+```
+
+
+```{r}
+df
+```
+
+
+### rearrange with k  3 and the found clustering
+
+```{r}
+df_ar <- df
+k_clus <- as.data.frame(k_clus)
+k_clus
+df_ar <- bind_cols(k_clus, df) %>% arrange(k_clus)
+df_ar
+```
+### heatmap with data arranged 
+```{r, fig.cap= "heatmap with data arranded according to the found clusters - k = 3"}
+df_ar %>% select(-k_clus) %>% dist(diag = T, upper = T ) %>% as.matrix %>%
+  heatmap(symm = T,keep.dendro = T, Rowv = NA, )
+```
+
+exo 15 
+
+```{r}
+k3_cluster <- km.res$centers
+k3_cluster %>% as.data.frame() %>% rownames_to_column("cluster_num")
+  #add_column()
+```
+
+
+```{r}
+k_clus %>% arrange(k_clus)
+cluster_nut <- data.frame(c("1","2","3"),c(("HR BC CB"),("BB BR BS"),("CC BH")))
+names(cluster_nut) = c("cluster_num","cluster")
+k3_cluster_num <-k3_cluster %>% as.data.frame() %>% rownames_to_column("cluster_num")
+table15 <-left_join(k3_cluster_num,cluster_nut)
+table15 %>% select(c("cluster_num","cluster","Energy","Protein","Calcium"))
+```
+
+
+```{r}
+km.res
+```
+
+
+```{r}
+km.res$withinss
+numb_of_erro <- km.res$withinss
+```
+
+
+```{r}
+plot(x = table15$cluster_num , y = numb_of_erro)
+```
+
+
+
+## exo 18 
+```{r}
+fviz_nbclust(df, kmeans,method = "silhouette", k.max = 7)
+```
+
+```{r}
+k4 <- kmeans(df,4,iter.max = 100)
+sil_obj <- silhouette(k4$cluster, dist(df))
+sil_obj %>% fviz_silhouette(print.summary = T)
+```
+
+
+```{r}
+
+km.res$cluster
+slobj <- silhouette(km.res$cluster, dist(df_ar))
+slobj %>% fviz_silhouette() 
+
+```
+
+
+
+## exo 19
+```{r}
+library(datasets)
+data("USArrests")
+USArrests
+```
+
+```{r}
+fviz_nbclust(USArrests, kmeans,method = "silhouette", k.max = 49)
+```
+
+```{r}
+km.arrest <- kmeans(USArrests,2,iter.max = 100)
+km.arrest
+```
+```{r}
+fviz_cluster(km.arrest, USArrests, ellipse.type = "norm")
+```
+
+
+```{r}
+fviz_cluster(km.arrest, USArrests,
+palette = c("#2E9FDF", "#00AFBB", "#E7B800"),
+ellipse.type = "euclid", # Concentration ellipse
+star.plot = TRUE, # Add segments from centroids to items
+repel = TRUE, # Avoid label overplotting (slow)
+ggtheme = theme_minimal()
+)
+```
+```{r}
+silhouette(km.arrest$cluster,dist(USArrests))%>%
+fviz_silhouette()
+```
+
+
+
+
+
+
